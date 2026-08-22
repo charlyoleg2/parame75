@@ -50,15 +50,15 @@ const pDef: tParamDef = {
 		pNumber('Rc', 'mm', 10, 0, 400, 1)
 	],
 	paramSvg: {
-		L1: 'pastePusher_top.svg',
-		L2: 'pastePusher_top.svg',
-		W1: 'pastePusher_side.svg',
-		H1: 'pastePusher_side.svg',
-		H2: 'pastePusher_side.svg',
-		holes: 'pastePusher_top.svg',
-		D1: 'pastePusher_top.svg',
-		D2: 'pastePusher_top.svg',
-		Rc: 'pastePusher_top.svg'
+		L1: 'pastePusher_face.svg',
+		L2: 'pastePusher_profile_mid.svg',
+		W1: 'pastePusher_profile_side.svg',
+		H1: 'pastePusher_face.svg',
+		H2: 'pastePusher_face.svg',
+		holes: 'pastePusher_face.svg',
+		D1: 'pastePusher_face.svg',
+		D2: 'pastePusher_face.svg',
+		Rc: 'pastePusher_face.svg'
 	},
 	sim: {
 		tMax: 180,
