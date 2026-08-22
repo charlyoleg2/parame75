@@ -92,9 +92,11 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const Lbody = param.L1 + 2 * L2b;
 		const R3 = param.H1b + param.H1d + param.E2 / 2;
 		const R3i = R3 - param.T3;
-		const Ltot = R3 + param.L3 + Lbody;
+		const LL3 = R3 + param.L3;
+		const Ltot = LL3 + Lbody;
 		const W2b = (param.W1 - param.W2) / 2;
 		const W24 = param.W2 / 4;
+		const pi2 = Math.PI / 2;
 		// step-5 : checks on the parameter values
 		if (param.H1b < param.T3) {
 			throw `err096: H1b ${param.H1b} is too small compare to T3 ${param.T3}`;
@@ -223,27 +225,66 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		rGeome.vol = {
 			extrudes: [
 				{
-					outName: `subpax_${designName}_bottom`,
-					face: `${designName}_faceBottom`,
+					outName: `subpax_${designName}_face`,
+					face: `${designName}_faceFace`,
 					extrudeMethod: EExtrude.eLinearOrtho,
-					length: param.H2,
+					length: param.W1,
 					rotate: [0, 0, 0],
 					translate: [0, 0, 0]
 				},
 				{
-					outName: `subpax_${designName}_top`,
-					face: `${designName}_faceTop`,
+					outName: `subpax_${designName}_b1`,
+					face: `${designName}_faceSide`,
 					extrudeMethod: EExtrude.eLinearOrtho,
-					length: H2,
-					rotate: [0, 0, 0],
-					translate: [0, 0, param.H2]
+					length: param.L2,
+					rotate: [0, pi2, 0],
+					translate: [LL3, 0, param.W1]
+				},
+				{
+					outName: `subpax_${designName}_b2`,
+					face: `${designName}_faceSideB`,
+					extrudeMethod: EExtrude.eLinearOrtho,
+					length: param.L12,
+					rotate: [0, pi2, 0],
+					translate: [LL3 + param.L2, 0, param.W1]
+				},
+				{
+					outName: `subpax_${designName}_b3`,
+					face: `${designName}_faceMid`,
+					extrudeMethod: EExtrude.eLinearOrtho,
+					length: param.L1,
+					rotate: [0, pi2, 0],
+					translate: [LL3 + param.L2 + param.L12, 0, param.W1]
+				},
+				{
+					outName: `subpax_${designName}_b4`,
+					face: `${designName}_faceSideB`,
+					extrudeMethod: EExtrude.eLinearOrtho,
+					length: param.L12,
+					rotate: [0, pi2, 0],
+					translate: [LL3 + param.L2 + param.L12 + param.L1, 0, param.W1]
+				},
+				{
+					outName: `subpax_${designName}_b5`,
+					face: `${designName}_faceSide`,
+					extrudeMethod: EExtrude.eLinearOrtho,
+					length: param.L2,
+					rotate: [0, pi2, 0],
+					translate: [LL3 + param.L2 + 2 * param.L12 + param.L1, 0, param.W1]
 				}
 			],
 			volumes: [
 				{
 					outName: `pax_${designName}`,
 					boolMethod: EBVolume.eUnion,
-					inList: [`subpax_${designName}_bottom`, `subpax_${designName}_top`]
+					inList: [
+						`subpax_${designName}_face`,
+						`subpax_${designName}_b1`,
+						`subpax_${designName}_b2`,
+						`subpax_${designName}_b3`,
+						`subpax_${designName}_b4`,
+						`subpax_${designName}_b5`
+					]
 				}
 			]
 		};
