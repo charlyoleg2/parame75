@@ -50,7 +50,7 @@ const pDef: tParamDef = {
 		pNumber('W2', 'mm', 6, 1, 50, 1),
 		pNumber('H2d', 'mm', 5, 0, 50, 0.1),
 		pNumber('Ri', 'mm', 1, 0, 20, 0.1),
-		pNumber('Re', 'mm', 2, 0, 20, 0.1)
+		pNumber('Re', 'mm', 1.4, 0, 20, 0.1)
 	],
 	paramSvg: {
 		L1: 'pastePusher_face.svg',
@@ -82,6 +82,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 	const figFace = figure();
 	const figMid = figure();
 	const figSide = figure();
+	const figSideB = figure();
 	rGeome.logstr += `${rGeome.partName} simTime: ${t}\n`;
 	try {
 		// step-4 : some preparation calculation
@@ -92,12 +93,17 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const R3 = param.H1b + param.H1d + param.E2 / 2;
 		const R3i = R3 - param.T3;
 		const Ltot = R3 + param.L3 + Lbody;
+		const W2b = (param.W1 - param.W2) / 2;
+		const W24 = param.W2 / 4;
 		// step-5 : checks on the parameter values
 		if (param.H1b < param.T3) {
 			throw `err096: H1b ${param.H1b} is too small compare to T3 ${param.T3}`;
 		}
 		if (param.Re < param.Ri) {
 			throw `err099: Re ${param.Re} is too small compare to Ri ${param.Ri}`;
+		}
+		if (W2b < 0) {
+			throw `err104: W2 ${param.W2} is too large compare to W1 ${param.W1}`;
 		}
 		// step-6 : any logs
 		rGeome.logstr += `H1 ${ffix(H1)}  H2 ${ffix(H2)} mm\n`;
@@ -135,13 +141,82 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 			.closeSegStroke();
 		figFace.addMainO(ctrSpring);
 		// figMid
+		function ctrMid(iK: number, iY: number): tContour {
+			const rCtr = contour(0, iY)
+				.addPointR(param.W1 / 2, -iK * param.H1a)
+				.addPointR(param.W1, 0)
+				.addSegArc2()
+				.addSegStrokeR(0, iK * param.H1b)
+				.addPointR(-param.W1 / 2, iK * param.H1c)
+				.addPointR(-param.W1, 0)
+				.addSegArc2()
+				.closeSegStroke();
+			return rCtr;
+		}
+		const ctrMid1 = ctrMid(1, param.H1a);
+		const ctrMid2 = ctrMid(-1, 2 * H2 + param.E2 - param.H1a);
+		figMid.addMainO(ctrMid1);
+		figMid.addMainO(ctrMid2);
+		figMid.addSecond(ctrRectangle(0, param.H1a, param.W1, param.T3));
+		const rectY2 = H2 + param.E2 + param.H1d + param.H1b - param.T3;
+		figMid.addSecond(ctrRectangle(0, rectY2, param.W1, param.T3));
 		// figSide
-		// figSideL12
+		function ctrSide(iK: number, iK2: number, iY: number, iSkip: boolean): tContour {
+			const firstInE = iK * iK2 < 0;
+			const RR1 = firstInE ? param.Ri : param.Re;
+			const RR2 = firstInE ? param.Re : param.Ri;
+			const rCtr = contour(0, iY)
+				.addPointR(param.W1 / 2, -iK * param.H1a)
+				.addPointR(param.W1, 0)
+				.addSegArc2()
+				.addSegStrokeR(0, iK * (param.H1b + param.H1d));
+			if (iSkip) {
+				if (firstInE) {
+					rCtr.addSegStrokeR(-W2b, 0)
+						.addSegStrokeR(-W24, iK2 * param.H2d)
+						.addCornerRounded(RR1)
+						.addSegStrokeR(-W24, -iK2 * param.H2d)
+						.addSegStrokeR(-2 * W24 - W2b, 0);
+				} else {
+					rCtr.addSegStrokeR(-W2b - 2 * W24, 0)
+						.addSegStrokeR(-W24, -iK2 * param.H2d)
+						.addCornerRounded(RR2)
+						.addSegStrokeR(-W24, iK2 * param.H2d)
+						.addSegStrokeR(-W2b, 0);
+				}
+			} else {
+				rCtr.addSegStrokeR(-W2b, 0)
+					.addSegStrokeR(-W24, iK2 * param.H2d)
+					.addCornerRounded(RR1)
+					.addSegStrokeR(-2 * W24, -2 * iK2 * param.H2d)
+					.addCornerRounded(RR2)
+					.addSegStrokeR(-W24, iK2 * param.H2d)
+					.addSegStrokeR(-W2b, 0);
+			}
+			rCtr.closeSegStroke();
+			return rCtr;
+		}
+		const ctrSide1 = ctrSide(1, 1, param.H1a, false);
+		const ctrSide2 = ctrSide(-1, 1, 2 * H2 + param.E2 - param.H1a, false);
+		figSide.addMainO(ctrSide1);
+		figSide.addMainO(ctrSide2);
+		figSide.addSecond(ctrMid1);
+		figSide.addSecond(ctrMid2);
+		// figSideB
+		const ctrSideB1 = ctrSide(1, 1, param.H1a, true);
+		const ctrSideB2 = ctrSide(-1, 1, 2 * H2 + param.E2 - param.H1a, true);
+		figSideB.addMainO(ctrSideB1);
+		figSideB.addMainO(ctrSideB2);
+		figSideB.addSecond(ctrSide1);
+		figSideB.addSecond(ctrSide2);
+		figSideB.addSecond(ctrMid1);
+		figSideB.addSecond(ctrMid2);
 		// final figure list
 		rGeome.fig = {
 			faceFace: figFace,
 			faceMid: figMid,
-			faceSide: figSide
+			faceSide: figSide,
+			faceSideB: figSideB
 		};
 		// step-8 : recipes of the 3D construction
 		const designName = rGeome.partName;
