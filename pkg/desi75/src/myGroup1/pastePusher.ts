@@ -1,10 +1,10 @@
 // pastePusher.ts
-// a box
+// a tool to empty your toothpaste tube
 
 // step-1 : import from geometrix
 import type {
-	tContour,
-	tOuterInner,
+	//tContour,
+	//tOuterInner,
 	tParamDef,
 	tParamVal,
 	tGeom,
@@ -14,14 +14,14 @@ import type {
 } from 'geometrix';
 import {
 	contour,
-	contourCircle,
-	ctrRectangle,
+	//contourCircle,
+	//ctrRectangle,
 	figure,
 	//degToRad,
 	//radToDeg,
 	ffix,
 	pNumber,
-	pCheckbox,
+	//pCheckbox,
 	//pDropdown,
 	pSectionSeparator,
 	EExtrude,
@@ -35,30 +35,39 @@ const pDef: tParamDef = {
 	partName: 'pastePusher',
 	params: [
 		//pNumber(name, unit, init, min, max, step)
-		pNumber('L1', 'mm', 120, 1, 400, 1),
-		pNumber('L2', 'mm', 80, 1, 400, 1),
-		pNumber('W1', 'mm', 2, 0.1, 10, 0.1),
-		pNumber('H1', 'mm', 40, 1, 400, 1),
-		pNumber('H2', 'mm', 2, 0.1, 10, 0.1),
-		//pSectionSeparator(name)
-		pSectionSeparator('hollow'),
-		//pCheckbox(name, init)
-		pCheckbox('holes', true),
-		pNumber('D1', 'mm', 10, 1, 400, 1),
-		pNumber('D2', 'mm', 5, 1, 400, 1),
-		pSectionSeparator('corners'),
-		pNumber('Rc', 'mm', 10, 0, 400, 1)
+		pNumber('L1', 'mm', 40, 1, 500, 1),
+		pNumber('L2', 'mm', 6, 1, 50, 1),
+		pNumber('L3', 'mm', 3, 0, 50, 1),
+		pNumber('W1', 'mm', 8, 1, 50, 1),
+		pNumber('H1a', 'mm', 3, 0, 50, 0.5),
+		pNumber('H1b', 'mm', 3, 0, 50, 0.5),
+		pNumber('H1c', 'mm', 4, 0, 50, 0.1),
+		pNumber('H1d', 'mm', 4.1, 0, 50, 0.1),
+		pNumber('T3', 'mm', 2, 0.1, 20, 0.1),
+		pNumber('E2', 'mm', 1, 0, 20, 0.1),
+		pSectionSeparator('Guide'),
+		pNumber('L12', 'mm', 1, 0, 10, 0.1),
+		pNumber('W2', 'mm', 6, 1, 50, 1),
+		pNumber('H2d', 'mm', 5, 0, 50, 0.1),
+		pNumber('Ri', 'mm', 1, 0, 20, 0.1),
+		pNumber('Re', 'mm', 2, 0, 20, 0.1)
 	],
 	paramSvg: {
 		L1: 'pastePusher_face.svg',
-		L2: 'pastePusher_profile_mid.svg',
-		W1: 'pastePusher_profile_side.svg',
-		H1: 'pastePusher_face.svg',
-		H2: 'pastePusher_face.svg',
-		holes: 'pastePusher_face.svg',
-		D1: 'pastePusher_face.svg',
-		D2: 'pastePusher_face.svg',
-		Rc: 'pastePusher_face.svg'
+		L2: 'pastePusher_face.svg',
+		L3: 'pastePusher_face.svg',
+		W1: 'pastePusher_profile_mid.svg',
+		H1a: 'pastePusher_profile_mid.svg',
+		H1b: 'pastePusher_profile_mid.svg',
+		H1c: 'pastePusher_profile_mid.svg',
+		H1d: 'pastePusher_profile_side.svg',
+		T3: 'pastePusher_face.svg',
+		E2: 'pastePusher_profile_side.svg',
+		L12: 'pastePusher_face.svg',
+		W2: 'pastePusher_profile_side.svg',
+		H2d: 'pastePusher_profile_side.svg',
+		Ri: 'pastePusher_profile_side.svg',
+		Re: 'pastePusher_profile_side.svg'
 	},
 	sim: {
 		tMax: 180,
@@ -70,90 +79,32 @@ const pDef: tParamDef = {
 // step-3 : definition of the function that creates from the parameter-values the figures and construct the 3D
 function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 	const rGeome = initGeom(pDef.partName + suffix);
-	const figBottom = figure();
-	const figTop = figure();
-	const figSide = figure();
 	const figFace = figure();
+	const figMid = figure();
+	const figSide = figure();
 	rGeome.logstr += `${rGeome.partName} simTime: ${t}\n`;
 	try {
 		// step-4 : some preparation calculation
-		const L1b = param.L1 - 2 * param.W1;
-		const L2b = param.L2 - 2 * param.W1;
-		const Rcb = Math.max(param.Rc - param.W1, 0);
-		const H3b = param.H1 - param.H2;
-		const circleDelta = ((param.D1 + param.D2) * 3) / 4;
+		const H1 = param.H1a + param.H1b + param.H1c;
+		const H2 = param.H1a + param.H1b + param.H1d;
 		// step-5 : checks on the parameter values
-		if (L1b < 0) {
-			throw `err085: L1 ${param.L1} is too small compare to W1 ${param.W1}`;
-		}
-		if (L2b < 0) {
-			throw `err088: L2 ${param.L2} is too small compare to W1 ${param.W1}`;
-		}
-		if (H3b < 0) {
-			throw `err091: H1 ${param.H1} is too small compare to H2 ${param.H2}`;
+		if (param.Re < param.Ri) {
+			throw `err085: Re ${param.Re} is too big compare to Ri ${param.Ri}`;
 		}
 		// step-6 : any logs
-		rGeome.logstr += `box-base surface ${ffix(param.L1 * param.L2)} mm2\n`;
-		rGeome.logstr += `box volume ${ffix(param.L1 * param.L2 * param.H1)} mm3\n`;
+		rGeome.logstr += `H1 ${ffix(H1)}  H2 ${ffix(H2)} mm\n`;
 		// step-7 : drawing of the figures
-		// figTop
-		const ctrExt = contour(0, 0)
-			.addCornerRounded(param.Rc)
-			.addSegStrokeA(param.L1, 0)
-			.addCornerRounded(param.Rc)
-			.addSegStrokeA(param.L1, param.L2)
-			.addCornerRounded(param.Rc)
-			.addSegStrokeA(0, param.L2)
-			.addCornerRounded(param.Rc)
-			.closeSegStroke();
-		const ctrInt = ctrRectangle(param.W1, param.W1, L1b, L2b, Rcb);
-		const ctrsTop: tOuterInner = [ctrExt, ctrInt];
-		figTop.addMainOI(ctrsTop);
-		const hole1 = contourCircle(param.L1 / 2, param.L2 / 2, param.D1 / 2);
-		const hole2 = contourCircle(param.L1 / 2 + circleDelta, param.L2 / 2, param.D2 / 2);
-		if (param.holes) {
-			figTop.addSecond(hole1);
-			figTop.addSecond(hole2);
-		}
-		// figBottom
-		if (param.holes) {
-			figBottom.addMainOI([ctrExt, hole1, hole2]);
-		} else {
-			figBottom.addMainO(ctrExt);
-		}
-		figBottom.addSecond(ctrInt);
-		// figSide
-		function shapeU(hLength: number): tContour {
-			const rCtr = contour(0, 0)
-				.addSegStrokeR(hLength, 0)
-				.addSegStrokeR(0, param.H1)
-				.addSegStrokeR(-param.W1, 0)
-				.addSegStrokeR(0, -H3b)
-				.addSegStrokeR(-hLength + 2 * param.W1, 0)
-				.addSegStrokeR(0, H3b)
-				.addSegStrokeR(-param.W1, 0)
-				.closeSegStroke();
-			return rCtr;
-		}
-		figSide.addMainOI([shapeU(param.L2)]);
-		if (param.holes) {
-			const x1 = param.L2 / 2 - param.D1 / 2;
-			figSide.addSecond(ctrRectangle(x1, 0, param.D1, param.H2));
-		}
 		// figFace
-		figFace.addMainO(shapeU(param.L1));
-		if (param.holes) {
-			const x1 = param.L1 / 2 - param.D1 / 2;
-			figFace.addSecond(ctrRectangle(x1, 0, param.D1, param.H2));
-			const x2 = param.L1 / 2 + circleDelta - param.D2 / 2;
-			figFace.addSecond(ctrRectangle(x2, 0, param.D2, param.H2));
-		}
+		const ctrFig = contour(0, 0)
+			.addSegStrokeR(param.L1, 0)
+			.addSegStrokeR(0, H1)
+			.closeSegStroke();
+		figFace.addMainO(ctrFig);
 		// final figure list
 		rGeome.fig = {
-			faceBottom: figBottom,
-			faceTop: figTop,
-			faceSide: figSide,
-			faceFace: figFace
+			faceFace: figFace,
+			faceMid: figMid,
+			faceSide: figSide
 		};
 		// step-8 : recipes of the 3D construction
 		const designName = rGeome.partName;
@@ -171,7 +122,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 					outName: `subpax_${designName}_top`,
 					face: `${designName}_faceTop`,
 					extrudeMethod: EExtrude.eLinearOrtho,
-					length: H3b,
+					length: H2,
 					rotate: [0, 0, 0],
 					translate: [0, 0, param.H2]
 				}
@@ -201,7 +152,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 // step-11 : definiton of the final object that gathers the precedent object and function
 const pastePusherDef: tPageDef = {
 	pTitle: 'pastePusher',
-	pDescription: 'A box',
+	pDescription: 'a tool to empty your toothpaste tube',
 	pDef: pDef,
 	pGeom: pGeom
 };
