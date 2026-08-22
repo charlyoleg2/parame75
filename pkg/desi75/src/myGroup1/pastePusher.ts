@@ -3,7 +3,7 @@
 
 // step-1 : import from geometrix
 import type {
-	//tContour,
+	tContour,
 	//tOuterInner,
 	tParamDef,
 	tParamVal,
@@ -15,7 +15,7 @@ import type {
 import {
 	contour,
 	//contourCircle,
-	//ctrRectangle,
+	ctrRectangle,
 	figure,
 	//degToRad,
 	//radToDeg,
@@ -87,19 +87,56 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		// step-4 : some preparation calculation
 		const H1 = param.H1a + param.H1b + param.H1c;
 		const H2 = param.H1a + param.H1b + param.H1d;
+		const L2b = param.L2 + param.L12;
+		const Lbody = param.L1 + 2 * L2b;
+		const R3 = param.H1b + param.H1d + param.E2 / 2;
+		const R3i = R3 - param.T3;
+		const Ltot = R3 + param.L3 + Lbody;
 		// step-5 : checks on the parameter values
+		if (param.H1b < param.T3) {
+			throw `err096: H1b ${param.H1b} is too small compare to T3 ${param.T3}`;
+		}
 		if (param.Re < param.Ri) {
-			throw `err085: Re ${param.Re} is too big compare to Ri ${param.Ri}`;
+			throw `err099: Re ${param.Re} is too small compare to Ri ${param.Ri}`;
 		}
 		// step-6 : any logs
 		rGeome.logstr += `H1 ${ffix(H1)}  H2 ${ffix(H2)} mm\n`;
+		rGeome.logstr += `Ltotal ${ffix(Ltot)} mm\n`;
 		// step-7 : drawing of the figures
 		// figFace
-		const ctrFig = contour(0, 0)
-			.addSegStrokeR(param.L1, 0)
-			.addSegStrokeR(0, H1)
+		function ctrBodyFace(iK: number, iY: number): tContour {
+			const rCtr = contour(R3 + param.L3, iY)
+				.addSegStrokeR(Lbody, 0)
+				.addSegStrokeR(0, iK * H2)
+				.addSegStrokeR(-L2b, 0)
+				.addSegStrokeR(0, iK * (-H2 + H1))
+				.addSegStrokeR(-param.L1, 0)
+				.addSegStrokeR(0, iK * (-H1 + H2))
+				.addSegStrokeR(-L2b, 0)
+				.closeSegStroke();
+			return rCtr;
+		}
+		figFace.addSecond(ctrBodyFace(1, 0));
+		figFace.addSecond(ctrBodyFace(-1, 2 * H2 + param.E2));
+		figFace.addSecond(ctrRectangle(R3 + param.L3, param.H1a, Lbody, param.H1b));
+		figFace.addSecond(ctrRectangle(R3 + param.L3, H2 + param.E2 + param.H1d, Lbody, param.H1b));
+		const ctrSpring = contour(R3 + param.L3, param.H1a)
+			.addSegStrokeR(0, param.T3)
+			.addSegStrokeR(-param.L3, 0)
+			.addPointR(-R3i, R3i)
+			.addPointR(0, 2 * R3i)
+			.addSegArc2()
+			.addSegStrokeR(param.L3, 0)
+			.addSegStrokeR(0, param.T3)
+			.addSegStrokeR(-param.L3, 0)
+			.addPointR(-R3, -R3)
+			.addPointR(0, -2 * R3)
+			.addSegArc2()
 			.closeSegStroke();
-		figFace.addMainO(ctrFig);
+		figFace.addMainO(ctrSpring);
+		// figMid
+		// figSide
+		// figSideL12
 		// final figure list
 		rGeome.fig = {
 			faceFace: figFace,
