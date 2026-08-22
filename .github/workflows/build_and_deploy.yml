@@ -1,0 +1,54 @@
+# build_and_deploy.yml
+
+name: Build and Deploy
+on: [push]
+jobs:
+    build-and-deploy:
+        concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            id-token: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Automatic update of the github release
+              if: github.ref_type == 'tag'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  tag: ${{ github.ref_name }}
+              run: |
+                  gh release create "$tag" \
+                    --repo="$GITHUB_REPOSITORY" \
+                    --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
+                    --generate-notes
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version: '24'
+                  registry-url: 'https://registry.npmjs.org/'
+
+            - name: clean and install
+              run: npm ci
+
+            - name: Build and check
+              env:
+                  BASE_PATH: ${{ github.event.repository.name }}
+              run: |
+                  npm run ci
+                  npm -w desi75-ui run github-pages-fix
+
+            - name: Deploy to GitHub pages
+              uses: crazy-max/ghaction-github-pages@v5
+              with:
+                  target_branch: gh-pages
+                  build_dir: pkg/desi75-ui/build
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish
+              if: github.ref_type == 'tag'
+              run: |
+                  npm run ci  # rebuild without env BASE_PATH
+                  npm run gh-publish

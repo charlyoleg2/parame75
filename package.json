@@ -1,0 +1,64 @@
+{
+	"name": "parame75",
+	"version": "0.1.0",
+	"description": "The mono-repo for desi75, desi75-cli, desi75-ui and desi75-uis",
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MYNAME/parame75.git"
+	},
+	"homepage": "https://MYNAME.github.io/parame75/",
+	"author": "MYNAME",
+	"license": "ISC",
+	"keywords": [
+		"parametrix",
+		"3D",
+		"CAD"
+	],
+	"type": "module",
+	"workspaces": [
+		"pkg/*"
+	],
+	"scripts": {
+		"desi75:dev": "npm -w desi75 run dev",
+		"desi75:ci": "npm -w desi75 run ci",
+		"desi75:svgo": "npm -w desi75 run svgo",
+		"desi75:clean": "npm -w desi75 run clean",
+		"desi75:version": "npm -w desi75 version patch",
+		"desi75:publish": "npm -w desi75 publish --provenance",
+		"desi75-ui:dev": "npm -w desi75-ui run dev",
+		"desi75-ui:ci": "npm -w desi75-ui run ci",
+		"desi75-ui:clean": "npm -w desi75-ui run clean",
+		"desi75-ui:preview": "npm -w desi75-ui run preview",
+		"desi75-ui:version": "npm -w desi75-ui version patch",
+		"desi75-cli:ci": "npm -w desi75-cli run ci",
+		"desi75-cli:run": "npm -w desi75-cli run run",
+		"desi75-cli:clean": "npm -w desi75-cli run clean",
+		"desi75-cli:version": "npm -w desi75-cli version patch",
+		"desi75-cli:publish": "npm -w desi75-cli publish --provenance",
+		"desi75-uis:ci": "npm -w desi75-uis run ci",
+		"desi75-uis:copy_public": "npm -w desi75-uis run copy_public",
+		"desi75-uis:run": "npm -w desi75-uis run run",
+		"desi75-uis:clean": "npm -w desi75-uis run clean",
+		"desi75-uis:version": "npm -w desi75-uis version patch",
+		"desi75-uis:publish": "npm -w desi75-uis publish --provenance",
+		"dev": "run-p desi75:dev desi75-ui:dev",
+		"ci": "run-s desi75:ci desi75-ui:ci desi75-cli:ci desi75-uis:ci",
+		"ci2": "run-s desi75:ci desi75-ui:ci",
+		"ci3": "run-s desi75:ci desi75-cli:ci",
+		"svgo": "run-s desi75:svgo",
+		"clean-root": "rimraf tmp output output2",
+		"clean": "run-s clean-root desi75:clean desi75-ui:clean desi75-cli:clean desi75-uis:clean",
+		"preview": "run-s desi75-ui:preview",
+		"run-uis": "run-s desi75-uis:run",
+		"run-cli": "run-s desi75-cli:run",
+		"versions": "run-s desi75:version desi75-ui:version desi75-cli:version desi75-uis:version",
+		"gh-publish": "run-s desi75:publish desi75-cli:publish desi75-uis:publish",
+		"ls-workspaces": "npm -ws exec -c pwd"
+	},
+	"devDependencies": {
+		"@atao60/fse-cli": "^0.1.9",
+		"npm-run-all2": "^9.0.3",
+		"rimraf": "^6.1.3"
+	}
+}
