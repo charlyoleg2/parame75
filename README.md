@@ -22,8 +22,8 @@ The UI is also available on the github-page.
 Links
 -----
 
-- [desi75-ui](https://MYNAME.github.io/parame75/) : public instance of the UI
-- [sources](https://github.com/MYNAME/parame75) : git-repository
+- [desi75-ui](https://charlyoleg2.github.io/parame75/) : public instance of the UI
+- [sources](https://github.com/charlyoleg2/parame75) : git-repository
 - [pkg](https://www.npmjs.com/package/desi75) : desi75 as npm-package
 - [pkg-cli](https://www.npmjs.com/package/desi75-cli) : desi75-cli as npm-package
 - [pkg-uis](https://www.npmjs.com/package/desi75-uis) : desi75-uis as npm-package
@@ -34,7 +34,7 @@ Usage for Makers
 
 Parametrize and generate your 3D-files with the online-app:
 
-[https://MYNAME.github.io/parame75/](https://MYNAME.github.io/parame75/)
+[https://charlyoleg2.github.io/parame75/](https://charlyoleg2.github.io/parame75/)
 
 Or use the UI locally:
 
@@ -52,7 +52,7 @@ Getting started for Dev
 -----------------------
 
 ```bash
-git clone https://github.com/MYNAME/parame75
+git clone https://github.com/charlyoleg2/parame75
 cd parame75
 npm i
 npm run ci

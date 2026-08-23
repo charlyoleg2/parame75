@@ -36,7 +36,7 @@ Development
 -----------
 
 ```bash
-git clone https://github.com/MYNAME/parame75
+git clone https://github.com/charlyoleg2/parame75
 cd parame75
 npm install
 npm run ci
