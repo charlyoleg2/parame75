@@ -1,6 +1,6 @@
 {
 	"name": "parame75",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "The mono-repo for desi75, desi75-cli, desi75-ui and desi75-uis",
 	"private": true,
 	"repository": {
