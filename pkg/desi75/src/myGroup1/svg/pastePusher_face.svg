@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="389.50186"
+   width="482.16345"
    height="244.55212"
-   viewBox="0 0 103.0557 64.704415"
+   viewBox="0 0 127.57241 64.704415"
    version="1.1"
    id="svg1"
    inkscape:version="1.4.4 (1:1.4.4+202605061436+dcaf3e7d9e)"
@@ -28,7 +28,7 @@
      inkscape:document-units="px"
      inkscape:zoom="1.4967093"
      inkscape:cx="270.92769"
-     inkscape:cy="740.95885"
+     inkscape:cy="794.40944"
      inkscape:window-width="1854"
      inkscape:window-height="1131"
      inkscape:window-x="0"
@@ -39,7 +39,7 @@
     <inkscape:page
        x="0"
        y="0"
-       width="103.0557"
+       width="127.57241"
        height="64.704414"
        id="page2"
        margin="0"
@@ -47,6 +47,12 @@
   </sodipodi:namedview>
   <defs
      id="defs1">
+    <rect
+       x="382.17175"
+       y="302.66397"
+       width="209.79358"
+       height="42.092342"
+       id="rect19" />
     <rect
        x="231.73228"
        y="317.71655"
@@ -174,13 +180,18 @@
     <rect
        style="opacity:1;fill:#ffffff;stroke:#ffffff;stroke-width:0.264583;stroke-linejoin:round;stroke-dasharray:none"
        id="rect50"
-       width="102.79112"
+       width="127.30782"
        height="64.439827"
        x="13.527941"
        y="26.069843"
        inkscape:export-filename="pastePusher_face.svg"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
+    <path
+       style="fill:#eef4d7;stroke:#abc837;stroke-width:0.264583;stroke-linejoin:round"
+       d="m 105.75,44.587521 h 15.125 c 0,0 3.62041,0.438292 5.3263,1.04023 1.48342,0.523436 2.96417,1.196716 4.1737,2.202477 1.36888,1.138265 2.56528,2.573684 3.3125,4.189586 0.95931,2.074574 1.32224,4.438422 1.34375,6.72396 0.0204,2.171532 -0.30558,4.413378 -1.15625,6.411459 -0.46461,1.091285 -1.27116,2.020865 -2.08646,2.88229 -1.1547,1.220036 -2.40763,2.430645 -3.91354,3.175005 -2.15168,1.063556 -7,1.687499 -7,1.687499 H 105.75 v -3.375001 h 15.125 c 0,0 4.45511,-0.76667 6.26345,-2.006026 1.59167,-1.090861 2.8116,-2.759857 3.63588,-4.504552 0.62094,-1.314295 0.8909,-2.817107 0.88192,-4.270674 -0.01,-1.540386 -0.34556,-3.114925 -0.99041,-4.513866 -0.64453,-1.398226 -1.55089,-2.765698 -2.78745,-3.682962 -1.99853,-1.482481 -7.00339,-2.584427 -7.00339,-2.584427 H 105.75 Z"
+       id="path3-3"
+       sodipodi:nodetypes="ccaaaaaaaccccaaaaaccc" />
     <rect
        style="fill:#dde9af;stroke:#008000;stroke-width:0.264583;stroke-linejoin:round"
        id="rect2"
@@ -469,5 +480,17 @@
        style="fill:#dde9af;stroke:#999999;stroke-width:0.264582;stroke-linejoin:round"
        d="M 54.919792,52.388549 V 35.091347"
        id="path4-1-1-4-5-3" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-15.721495,1.4142136)"
+       id="text2"
+       style="font-size:16px;line-height:normal;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono';text-decoration-color:#000000;white-space:pre;shape-inside:url(#rect19);fill:#000000;stroke-width:1;-inkscape-stroke:none;stop-color:#000000"><tspan
+         x="382.17188"
+         y="316.9005"
+         id="tspan11">secondSpring:[Off,On]</tspan></text>
+    <path
+       style="fill:#eef4d7;stroke:#000000;stroke-width:0.264583;stroke-linejoin:round;marker-start:url(#ArrowWide)"
+       d="m 116.50629,74.599767 -2.47488,7.071069"
+       id="path22" />
   </g>
 </svg>

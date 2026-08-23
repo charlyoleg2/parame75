@@ -21,7 +21,7 @@ import {
 	//radToDeg,
 	ffix,
 	pNumber,
-	//pCheckbox,
+	pCheckbox,
 	//pDropdown,
 	pSectionSeparator,
 	EExtrude,
@@ -45,6 +45,7 @@ const pDef: tParamDef = {
 		pNumber('H1d', 'mm', 4.1, 0, 50, 0.1),
 		pNumber('T3', 'mm', 2, 0.1, 20, 0.1),
 		pNumber('E2', 'mm', 1, 0, 20, 0.1),
+		pCheckbox('secondSpring', false),
 		pSectionSeparator('Guide'),
 		pNumber('L12', 'mm', 1, 0, 10, 0.1),
 		pNumber('W2', 'mm', 6, 1, 50, 1),
@@ -63,6 +64,7 @@ const pDef: tParamDef = {
 		H1d: 'pastePusher_profile_side.svg',
 		T3: 'pastePusher_face.svg',
 		E2: 'pastePusher_profile_side.svg',
+		secondSpring: 'pastePusher_face.svg',
 		L12: 'pastePusher_face.svg',
 		W2: 'pastePusher_profile_side.svg',
 		H2d: 'pastePusher_profile_side.svg',
@@ -93,7 +95,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const R3 = param.H1b + param.H1d + param.E2 / 2;
 		const R3i = R3 - param.T3;
 		const LL3 = R3 + param.L3;
-		const Ltot = LL3 + Lbody;
+		const Ltot = LL3 + Lbody + param.secondSpring ? LL3 : 0;
 		const W2b = (param.W1 - param.W2) / 2;
 		const W24 = param.W2 / 4;
 		const pi2 = Math.PI / 2;
@@ -113,7 +115,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		// step-7 : drawing of the figures
 		// figFace
 		function ctrBodyFace(iK: number, iY: number): tContour {
-			const rCtr = contour(R3 + param.L3, iY)
+			const rCtr = contour(LL3, iY)
 				.addSegStrokeR(Lbody, 0)
 				.addSegStrokeR(0, iK * H2)
 				.addSegStrokeR(-L2b, 0)
@@ -126,22 +128,28 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		}
 		figFace.addSecond(ctrBodyFace(1, 0));
 		figFace.addSecond(ctrBodyFace(-1, 2 * H2 + param.E2));
-		figFace.addSecond(ctrRectangle(R3 + param.L3, param.H1a, Lbody, param.H1b));
-		figFace.addSecond(ctrRectangle(R3 + param.L3, H2 + param.E2 + param.H1d, Lbody, param.H1b));
-		const ctrSpring = contour(R3 + param.L3, param.H1a)
-			.addSegStrokeR(0, param.T3)
-			.addSegStrokeR(-param.L3, 0)
-			.addPointR(-R3i, R3i)
-			.addPointR(0, 2 * R3i)
-			.addSegArc2()
-			.addSegStrokeR(param.L3, 0)
-			.addSegStrokeR(0, param.T3)
-			.addSegStrokeR(-param.L3, 0)
-			.addPointR(-R3, -R3)
-			.addPointR(0, -2 * R3)
-			.addSegArc2()
-			.closeSegStroke();
-		figFace.addMainO(ctrSpring);
+		figFace.addSecond(ctrRectangle(LL3, param.H1a, Lbody, param.H1b));
+		figFace.addSecond(ctrRectangle(LL3, H2 + param.E2 + param.H1d, Lbody, param.H1b));
+		function ctrSpring(iK: number, iX: number): tContour {
+			const rCtr = contour(iX, param.H1a)
+				.addSegStrokeR(0, param.T3)
+				.addSegStrokeR(-iK * param.L3, 0)
+				.addPointR(-iK * R3i, R3i)
+				.addPointR(0, 2 * R3i)
+				.addSegArc2()
+				.addSegStrokeR(iK * param.L3, 0)
+				.addSegStrokeR(0, param.T3)
+				.addSegStrokeR(-iK * param.L3, 0)
+				.addPointR(-iK * R3, -R3)
+				.addPointR(0, -2 * R3)
+				.addSegArc2()
+				.closeSegStroke();
+			return rCtr;
+		}
+		figFace.addMainO(ctrSpring(1, LL3));
+		if (param.secondSpring) {
+			figFace.addMainO(ctrSpring(-1, LL3 + Lbody));
+		}
 		// figMid
 		function ctrMid(iK: number, iY: number): tContour {
 			const rCtr = contour(0, iY)
