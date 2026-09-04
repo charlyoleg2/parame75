@@ -32,7 +32,7 @@ const pDef: tParamDef = {
 	partName: 'bookshelf',
 	params: [
 		//pNumber(name, unit, init, min, max, step)
-		pNumber('L1', 'mm', 120, 1, 4000, 1),
+		pNumber('L1', 'mm', 1200, 1, 4000, 1),
 		pNumber('H1', 'mm', 100, 1, 4000, 1),
 		pNumber('H2', 'mm', 200, 1, 4000, 1),
 		pNumber('H3', 'mm', 200, 1, 4000, 1),
@@ -75,6 +75,15 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		// step-4 : some preparation calculation
 		const Htot1 = param.H1 + param.H2 + param.H3 + 2 * param.E1;
 		const Htot = Htot1 + param.E1;
+		const L12 = param.L1 / 2 - param.E1 / 2;
+		const xx = [param.E1, param.L1 - param.E1 - param.E2];
+		const H22 = param.H1 + param.E1 + param.H2;
+		const H32 = H22 + param.E1 + param.H3;
+		const yy = [param.H1 - param.E2, H22 - param.E2, H32 - param.E2];
+		if (param.mid) {
+			xx.push(L12 - param.E2);
+			xx.push(L12 + param.E1);
+		}
 		// step-5 : checks on the parameter values
 		if (param.E2 > param.H1) {
 			throw `err096: H1 ${param.H1} is too small compare to E2 ${param.E2}`;
@@ -84,6 +93,16 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		// step-7 : drawing of the figures
 		// figFace
 		figFace.addMainO(ctrRectangle(0, Htot1, param.L1, param.E1));
+		figFace.addSecond(ctrRectangle(0, 0, param.E1, Htot1));
+		figFace.addSecond(ctrRectangle(param.L1 - param.E1, 0, param.E1, Htot1));
+		if (param.mid) {
+			figFace.addSecond(ctrRectangle(L12, 0, param.E1, Htot1));
+		}
+		for (const ix of xx) {
+			for (const iy of yy) {
+				figFace.addSecond(ctrRectangle(ix, iy, param.E2, param.E2));
+			}
+		}
 		// figSide
 		// figTop
 		// final figure list
