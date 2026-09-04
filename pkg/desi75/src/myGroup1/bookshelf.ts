@@ -32,18 +32,18 @@ const pDef: tParamDef = {
 	partName: 'bookshelf',
 	params: [
 		//pNumber(name, unit, init, min, max, step)
-		pNumber('L1', 'mm', 40, 1, 4000, 1),
-		pNumber('H1', 'mm', 40, 1, 4000, 1),
-		pNumber('H2', 'mm', 50, 1, 4000, 1),
-		pNumber('H3', 'mm', 50, 1, 4000, 1),
-		pNumber('W1', 'mm', 50, 1, 4000, 1),
+		pNumber('L1', 'mm', 120, 1, 4000, 1),
+		pNumber('H1', 'mm', 100, 1, 4000, 1),
+		pNumber('H2', 'mm', 200, 1, 4000, 1),
+		pNumber('H3', 'mm', 200, 1, 4000, 1),
+		pNumber('W1', 'mm', 200, 1, 4000, 1),
 		pCheckbox('mid', true),
 		pSectionSeparator('details'),
-		pNumber('E1', 'mm', 50, 1, 4000, 1),
-		pNumber('E2', 'mm', 50, 1, 4000, 1),
-		pNumber('W2', 'mm', 50, 1, 4000, 1),
-		pNumber('H5', 'mm', 50, 1, 4000, 1),
-		pNumber('W5', 'mm', 50, 1, 4000, 1)
+		pNumber('E1', 'mm', 20, 1, 400, 1),
+		pNumber('E2', 'mm', 30, 1, 400, 1),
+		pNumber('W2', 'mm', 150, 1, 4000, 1),
+		pNumber('H5', 'mm', 60, 1, 400, 1),
+		pNumber('W5', 'mm', 30, 1, 400, 1)
 	],
 	paramSvg: {
 		L1: 'bookshelf_face.svg',
