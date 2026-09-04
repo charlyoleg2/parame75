@@ -31,15 +31,19 @@ const pDef: tParamDef = {
 	partName: 'bookshelf',
 	params: [
 		//pNumber(name, unit, init, min, max, step)
+		pNumber('L1', 'mm', 40, 1, 4000, 1),
 		pNumber('H1', 'mm', 40, 1, 4000, 1),
 		pNumber('H2', 'mm', 50, 1, 4000, 1),
+		pNumber('H3', 'mm', 50, 1, 4000, 1),
 		pNumber('radius', 'mm', 10, 1, 4000, 1),
 		pSectionSeparator('corners'),
 		pNumber('Rc', 'mm', 10, 0, 400, 1)
 	],
 	paramSvg: {
-		H1: 'bookshelf_face.svg',
+		L1: 'bookshelf_face.svg',
+		H1: 'bookshelf_face2.svg',
 		H2: 'bookshelf_side.svg',
+		H3: 'bookshelf_top2.svg',
 		radius: 'bookshelf_top.svg',
 		Rc: 'bookshelf_face.svg'
 	},
