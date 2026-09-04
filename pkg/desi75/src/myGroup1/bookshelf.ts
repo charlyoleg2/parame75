@@ -3,7 +3,7 @@
 
 import type {
 	//tContour,
-	tOuterInner,
+	//tOuterInner,
 	tParamDef,
 	tParamVal,
 	tGeom,
@@ -12,14 +12,15 @@ import type {
 	//tSubDesign
 } from 'geometrix';
 import {
-	contour,
-	contourCircle,
+	//contour,
+	//contourCircle,
+	ctrRectangle,
 	figure,
 	//degToRad,
 	//radToDeg,
-	//ffix,
+	ffix,
 	pNumber,
-	//pCheckbox,
+	pCheckbox,
 	//pDropdown,
 	pSectionSeparator,
 	EExtrude,
@@ -35,17 +36,27 @@ const pDef: tParamDef = {
 		pNumber('H1', 'mm', 40, 1, 4000, 1),
 		pNumber('H2', 'mm', 50, 1, 4000, 1),
 		pNumber('H3', 'mm', 50, 1, 4000, 1),
-		pNumber('radius', 'mm', 10, 1, 4000, 1),
-		pSectionSeparator('corners'),
-		pNumber('Rc', 'mm', 10, 0, 400, 1)
+		pNumber('W1', 'mm', 50, 1, 4000, 1),
+		pCheckbox('mid', true),
+		pSectionSeparator('details'),
+		pNumber('E1', 'mm', 50, 1, 4000, 1),
+		pNumber('E2', 'mm', 50, 1, 4000, 1),
+		pNumber('W2', 'mm', 50, 1, 4000, 1),
+		pNumber('H5', 'mm', 50, 1, 4000, 1),
+		pNumber('W5', 'mm', 50, 1, 4000, 1)
 	],
 	paramSvg: {
 		L1: 'bookshelf_face.svg',
 		H1: 'bookshelf_face2.svg',
 		H2: 'bookshelf_side.svg',
 		H3: 'bookshelf_top2.svg',
-		radius: 'bookshelf_top.svg',
-		Rc: 'bookshelf_face.svg'
+		W1: 'bookshelf_top2.svg',
+		mid: 'bookshelf_top2.svg',
+		E1: 'bookshelf_top.svg',
+		E2: 'bookshelf_top.svg',
+		W2: 'bookshelf_top.svg',
+		H5: 'bookshelf_top.svg',
+		W5: 'bookshelf_face.svg'
 	},
 	sim: {
 		tMax: 180,
@@ -57,23 +68,29 @@ const pDef: tParamDef = {
 function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 	const rGeome = initGeom(pDef.partName + suffix);
 	const figFace = figure();
+	const figSide = figure();
+	const figTop = figure();
 	rGeome.logstr += `${rGeome.partName} simTime: ${t}\n`;
 	try {
+		// step-4 : some preparation calculation
+		const Htot1 = param.H1 + param.H2 + param.H3 + 2 * param.E1;
+		const Htot = Htot1 + param.E1;
+		// step-5 : checks on the parameter values
+		if (param.E2 > param.H1) {
+			throw `err096: H1 ${param.H1} is too small compare to E2 ${param.E2}`;
+		}
+		// step-6 : any logs
+		rGeome.logstr += `Htotal ${ffix(Htot)} mm\n`;
+		// step-7 : drawing of the figures
 		// figFace
-		const face1: tOuterInner = [];
-		const ctrPoleFace = contour(-param.H1 / 2, -param.H2 / 2)
-			.addCornerRounded(param.Rc)
-			.addSegStrokeA(param.H1 / 2, -param.H2 / 2)
-			.addSegStrokeA(param.H1 / 2, param.H2 / 2)
-			.addCornerRounded(param.Rc)
-			.addSegStrokeA(-param.H1 / 2, param.H2 / 2)
-			.closeSegStroke();
-		face1.push(ctrPoleFace);
-		face1.push(contourCircle(0, 0, param.radius));
-		figFace.addMainOI(face1);
+		figFace.addMainO(ctrRectangle(0, Htot1, param.L1, param.E1));
+		// figSide
+		// figTop
 		// final figure list
 		rGeome.fig = {
-			faceSide: figFace
+			faceFace: figFace,
+			faceSide: figSide,
+			faceTop: figTop
 		};
 		// volume
 		const designName = rGeome.partName;
