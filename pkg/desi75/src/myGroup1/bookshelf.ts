@@ -307,6 +307,30 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 			});
 			partList.push(eName);
 		}
+		if (param.E2 > 0) {
+			const eName = `subpax_${designName}_beam1`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceBeamFace`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E2,
+				rotate: [pi2, 0, 0],
+				translate: [0, param.E2 + param.E1, 0]
+			});
+			partList.push(eName);
+		}
+		for (const [idx, iy] of yy2.entries()) {
+			const eName = `subpax_${designName}_beam2${idx}`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceBeamTop`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E2,
+				rotate: [0, 0, 0],
+				translate: [0, 0, iy]
+			});
+			partList.push(eName);
+		}
 		rGeome.vol = {
 			extrudes: partExtrude,
 			volumes: [
