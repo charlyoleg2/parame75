@@ -2,7 +2,7 @@
 // a low-board bookshelf
 
 import type {
-	//tContour,
+	tContour,
 	//tOuterInner,
 	tParamDef,
 	tParamVal,
@@ -12,7 +12,7 @@ import type {
 	//tSubDesign
 } from 'geometrix';
 import {
-	//contour,
+	contour,
 	//contourCircle,
 	ctrRectangle,
 	figure,
@@ -70,6 +70,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 	const figFace = figure();
 	const figSide = figure();
 	const figTop = figure();
+	const figBeamFace = figure();
 	rGeome.logstr += `${rGeome.partName} simTime: ${t}\n`;
 	try {
 		// step-4 : some preparation calculation
@@ -94,21 +95,24 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const Lplateau1 = param.L1 - 2 * param.E1;
 		const Lplateau2 = (param.L1 - 3 * param.E1) / 2;
 		const Lplateau = param.mid ? Lplateau2 : Lplateau1;
+		const LHorBeam = Lplateau - 2 * param.E2;
+		const LVerBeam = [param.H2 - param.E2, param.H3 - param.E2];
+		const Wtot = param.W5 + param.W1;
 		// step-5 : checks on the parameter values
 		if (param.H1 < param.H5 + param.E2) {
 			throw `err096: H1 ${param.H1} is too small compare to E2 ${param.E2} and H5 ${param.H5}`;
 		}
-		if (param.H2 < param.E2) {
+		if (LVerBeam[0] < 0) {
 			throw `err102: H2 ${param.H2} is too small compare to E2 ${param.E2}`;
 		}
-		if (param.H3 < param.E2) {
+		if (LVerBeam[1] < 0) {
 			throw `err105: H3 ${param.H2} is too small compare to E2 ${param.E2}`;
 		}
-		if (Lplateau < 2 * param.E2) {
-			throw `err108: Lplateau ${Lplateau} is too small compare to E2 ${param.E2}`;
+		if (LHorBeam < 0) {
+			throw `err108: LHorBeam ${LHorBeam} is too small compare to E2 ${param.E2}`;
 		}
 		// step-6 : any logs
-		rGeome.logstr += `Htotal ${ffix(Htot)} mm\n`;
+		rGeome.logstr += `Htotal ${ffix(Htot)}  Wtotal ${ffix(Wtot)} mm\n`;
 		// step-7 : drawing of the figures
 		// figFace
 		figFace.addSecond(ctrRectangle(0, Htot1, param.L1, param.E1));
@@ -127,12 +131,43 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 			}
 		}
 		// figSide
+		figSide.addSecond(ctrRectangle(0, Htot1, Wtot, param.E1));
+		figSide.addSecond(ctrRectangle(0, param.H5, param.E1, Htot1 - param.H5));
+		const ctrSide = contour(Wtot, 0).addSegStrokeR(0, Htot1).addSegStrokeR(-Wtot, 0);
+		if (param.H5 > 0 && param.W5 > 0) {
+			ctrSide
+				.addSegStrokeR(0, -Htot1 + param.H5)
+				.addSegStrokeR(param.W5, 0)
+				.addSegStrokeR(0, -param.H5);
+		} else {
+			ctrSide.addSegStrokeR(0, -Htot1);
+		}
+		ctrSide.closeSegStroke();
+		figSide.addMainO(ctrSide);
 		// figTop
+		figTop.addSecond(ctrRectangle(0, 0, param.L1, Wtot));
+		// figBeamFace
+		figBeamFace.mergeFigure(figFace, true);
+		const beamFace: tContour[] = [];
+		for (const ix of xx3) {
+			for (const iy of yy2) {
+				beamFace.push(ctrRectangle(ix + param.E2, iy, LHorBeam, param.E2));
+			}
+		}
+		for (const ix of xx2) {
+			beamFace.push(ctrRectangle(ix, yy1[0] + param.E1, param.E2, LVerBeam[0]));
+			beamFace.push(ctrRectangle(ix, yy1[1] + param.E1, param.E2, LVerBeam[1]));
+		}
+		for (const iCtr of beamFace) {
+			figFace.addSecond(iCtr);
+			figBeamFace.addMainO(iCtr);
+		}
 		// final figure list
 		rGeome.fig = {
 			faceFace: figFace,
 			faceSide: figSide,
-			faceTop: figTop
+			faceTop: figTop,
+			faceBeamFace: figBeamFace
 		};
 		// volume
 		const designName = rGeome.partName;
