@@ -34,9 +34,9 @@ const pDef: tParamDef = {
 		//pNumber(name, unit, init, min, max, step)
 		pNumber('L1', 'mm', 1200, 1, 4000, 1),
 		pNumber('H1', 'mm', 100, 1, 4000, 1),
-		pNumber('H2', 'mm', 200, 1, 4000, 1),
-		pNumber('H3', 'mm', 200, 1, 4000, 1),
-		pNumber('W1', 'mm', 200, 1, 4000, 1),
+		pNumber('H2', 'mm', 340, 1, 4000, 1),
+		pNumber('H3', 'mm', 150, 1, 4000, 1),
+		pNumber('W1', 'mm', 250, 1, 4000, 1),
 		pCheckbox('mid', true),
 		pSectionSeparator('details'),
 		pNumber('E1', 'mm', 20, 1, 400, 1),
