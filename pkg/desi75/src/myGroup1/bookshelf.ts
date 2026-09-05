@@ -7,9 +7,14 @@ import type {
 	tParamDef,
 	tParamVal,
 	tGeom,
-	tPageDef
-	//tSubInst
+	//DesignParam,
+	//tInherit,
+	tExtrude,
+	//tSubInst,
 	//tSubDesign
+	//Transform2d,
+	//Transform3d,
+	tPageDef
 } from 'geometrix';
 import {
 	contour,
@@ -173,21 +178,19 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		figSideMid.addMainO(ctrSideMid);
 		// figTop
 		figTop.addMainO(ctrRectangle(0, 0, param.L1, Wtot));
-		figTop.addSecond(ctrRectangle(param.E1, Wtot - param.E1, Lback, param.E1));
+		figTop.addSecond(ctrRectangle(param.E1, 0, Lback, param.E1));
 		figTop.addSecond(ctrRectangle(xx1[0], 0, param.E1, Wtot));
 		figTop.addSecond(ctrRectangle(xx1[1], 0, param.E1, Wtot));
 		if (param.mid) {
-			figTop.addSecond(ctrRectangle(xx1[2], 0, param.E1, Wtot - param.E1));
+			figTop.addSecond(ctrRectangle(xx1[2], param.E1, param.E1, Wtot - param.E1));
 		}
 		for (const ix of xx3) {
-			figTop.addSecond(
-				ctrRectangle(ix + param.E2, Wtot - param.E1 - param.E2, LHorBeam, param.E2)
-			);
+			figTop.addSecond(ctrRectangle(ix + param.E2, param.E1, LHorBeam, param.E2));
 		}
 		// figPlateau
 		figPlateau.mergeFigure(figTop, true);
 		for (const ix of xx3) {
-			figPlateau.addMainO(ctrRectangle(ix, 0, Lplateau, Wtot - param.E1));
+			figPlateau.addMainO(ctrRectangle(ix, param.E1, Lplateau, Wtot - param.E1));
 		}
 		// figBeamFace
 		figBeamFace.mergeFigure(figFace, true);
@@ -209,7 +212,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		figBeamTop.mergeFigure(figTop, true);
 		const beamTop: tContour[] = [];
 		for (const ix of xx2) {
-			beamTop.push(ctrRectangle(ix, Wtot - param.E1 - param.W2, param.E2, param.W2));
+			beamTop.push(ctrRectangle(ix, param.E1, param.E2, param.W2));
 		}
 		for (const iCtr of beamTop) {
 			figTop.addSecond(iCtr);
@@ -228,22 +231,89 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		};
 		// volume
 		const designName = rGeome.partName;
+		//const partInherit: tInherit[] = [];
+		const partExtrude: tExtrude[] = [];
+		const partList: string[] = [];
+		const pi2 = Math.PI / 2;
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_top`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceTop`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [0, 0, 0],
+				translate: [0, 0, Htot1]
+			});
+			partList.push(eName);
+		}
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_plateau1`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_facePlateau`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [0, 0, 0],
+				translate: [0, 0, param.H1]
+			});
+			partList.push(eName);
+		}
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_plateau2`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_facePlateau`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [0, 0, 0],
+				translate: [0, 0, H22]
+			});
+			partList.push(eName);
+		}
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_back`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceFace`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [pi2, 0, 0],
+				translate: [0, param.E1, 0]
+			});
+			partList.push(eName);
+		}
+		for (let ii = 0; ii < 2; ii++) {
+			const eName = `subpax_${designName}_side${ii}`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceSide`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [pi2, 0, pi2],
+				translate: [ii * (param.L1 - param.E1), 0, 0]
+			});
+			partList.push(eName);
+		}
+		if (param.mid) {
+			const eName = `subpax_${designName}_sideMid`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceSideMid`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [pi2, 0, pi2],
+				translate: [L12, 0, 0]
+			});
+			partList.push(eName);
+		}
 		rGeome.vol = {
-			extrudes: [
-				{
-					outName: `subpax_${designName}_top`,
-					face: `${designName}_faceSide`,
-					extrudeMethod: EExtrude.eLinearOrtho,
-					length: 10,
-					rotate: [0, 0, 0],
-					translate: [0, 0, 0]
-				}
-			],
+			extrudes: partExtrude,
 			volumes: [
 				{
 					outName: `pax_${designName}`,
-					boolMethod: EBVolume.eIdentity,
-					inList: [`subpax_${designName}_top`]
+					boolMethod: EBVolume.eUnion,
+					inList: partList
 				}
 			]
 		};
