@@ -95,6 +95,7 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const Lplateau1 = param.L1 - 2 * param.E1;
 		const Lplateau2 = (param.L1 - 3 * param.E1) / 2;
 		const Lplateau = param.mid ? Lplateau2 : Lplateau1;
+		const Wplateau = param.W5 + param.W1 - param.E1;
 		const LHorBeam = Lplateau - 2 * param.E2;
 		const LVerBeam = [param.H2 - param.E2, param.H3 - param.E2];
 		const Wtot = param.W5 + param.W1;
@@ -144,6 +145,14 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		}
 		ctrSide.closeSegStroke();
 		figSide.addMainO(ctrSide);
+		for (const iy of yy1) {
+			figSide.addSecond(ctrRectangle(param.E1, iy, Wplateau, param.E1));
+		}
+		figSide.addSecond(ctrRectangle(param.E1, yy1[0] + param.E1, param.E2, LVerBeam[0]));
+		figSide.addSecond(ctrRectangle(param.E1, yy1[1] + param.E1, param.E2, LVerBeam[1]));
+		for (const iy of yy2) {
+			figSide.addSecond(ctrRectangle(param.E1, iy, param.W2, param.E2));
+		}
 		// figTop
 		figTop.addSecond(ctrRectangle(0, 0, param.L1, Wtot));
 		// figBeamFace
