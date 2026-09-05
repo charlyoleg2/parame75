@@ -69,8 +69,11 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 	const rGeome = initGeom(pDef.partName + suffix);
 	const figFace = figure();
 	const figSide = figure();
+	const figSideMid = figure();
 	const figTop = figure();
+	const figPlateau = figure();
 	const figBeamFace = figure();
+	const figBeamTop = figure();
 	rGeome.logstr += `${rGeome.partName} simTime: ${t}\n`;
 	try {
 		// step-4 : some preparation calculation
@@ -153,8 +156,39 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		for (const iy of yy2) {
 			figSide.addSecond(ctrRectangle(param.E1, iy, param.W2, param.E2));
 		}
+		// figSideMid
+		figSideMid.mergeFigure(figSide, true);
+		const ctrSideMid = contour(Wtot, 0)
+			.addSegStrokeR(0, Htot1)
+			.addSegStrokeR(-Wtot + param.E1, 0);
+		if (param.H5 > 0 && param.W5 > param.E1) {
+			ctrSideMid
+				.addSegStrokeR(0, -Htot1 + param.H5)
+				.addSegStrokeR(param.W5 - param.E1, 0)
+				.addSegStrokeR(0, -param.H5);
+		} else {
+			ctrSideMid.addSegStrokeR(0, -Htot1);
+		}
+		ctrSideMid.closeSegStroke();
+		figSideMid.addMainO(ctrSideMid);
 		// figTop
-		figTop.addSecond(ctrRectangle(0, 0, param.L1, Wtot));
+		figTop.addMainO(ctrRectangle(0, 0, param.L1, Wtot));
+		figTop.addSecond(ctrRectangle(param.E1, Wtot - param.E1, Lback, param.E1));
+		figTop.addSecond(ctrRectangle(xx1[0], 0, param.E1, Wtot));
+		figTop.addSecond(ctrRectangle(xx1[1], 0, param.E1, Wtot));
+		if (param.mid) {
+			figTop.addSecond(ctrRectangle(xx1[2], 0, param.E1, Wtot - param.E1));
+		}
+		for (const ix of xx3) {
+			figTop.addSecond(
+				ctrRectangle(ix + param.E2, Wtot - param.E1 - param.E2, LHorBeam, param.E2)
+			);
+		}
+		// figPlateau
+		figPlateau.mergeFigure(figTop, true);
+		for (const ix of xx3) {
+			figPlateau.addMainO(ctrRectangle(ix, 0, Lplateau, Wtot - param.E1));
+		}
 		// figBeamFace
 		figBeamFace.mergeFigure(figFace, true);
 		const beamFace: tContour[] = [];
@@ -171,12 +205,26 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 			figFace.addSecond(iCtr);
 			figBeamFace.addMainO(iCtr);
 		}
+		// figBeamTop
+		figBeamTop.mergeFigure(figTop, true);
+		const beamTop: tContour[] = [];
+		for (const ix of xx2) {
+			beamTop.push(ctrRectangle(ix, Wtot - param.E1 - param.W2, param.E2, param.W2));
+		}
+		for (const iCtr of beamTop) {
+			figTop.addSecond(iCtr);
+			figPlateau.addSecond(iCtr);
+			figBeamTop.addMainO(iCtr);
+		}
 		// final figure list
 		rGeome.fig = {
 			faceFace: figFace,
 			faceSide: figSide,
+			faceSideMid: figSideMid,
 			faceTop: figTop,
-			faceBeamFace: figBeamFace
+			facePlateau: figPlateau,
+			faceBeamFace: figBeamFace,
+			faceBeamTop: figBeamTop
 		};
 		// volume
 		const designName = rGeome.partName;
