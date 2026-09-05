@@ -42,8 +42,8 @@ const pDef: tParamDef = {
 		pNumber('E1', 'mm', 20, 1, 400, 1),
 		pNumber('E2', 'mm', 30, 1, 400, 1),
 		pNumber('W2', 'mm', 150, 1, 4000, 1),
-		pNumber('H5', 'mm', 60, 1, 400, 1),
-		pNumber('W5', 'mm', 30, 1, 400, 1)
+		pNumber('H5', 'mm', 60, 0, 400, 1),
+		pNumber('W5', 'mm', 30, 0, 400, 1)
 	],
 	paramSvg: {
 		L1: 'bookshelf_face.svg',
@@ -76,31 +76,54 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const Htot1 = param.H1 + param.H2 + param.H3 + 2 * param.E1;
 		const Htot = Htot1 + param.E1;
 		const L12 = param.L1 / 2 - param.E1 / 2;
-		const xx = [param.E1, param.L1 - param.E1 - param.E2];
+		const xx1 = [0, param.L1 - param.E1];
+		const xx2 = [param.E1, param.L1 - param.E1 - param.E2];
+		const xx3 = [param.E1];
 		const H22 = param.H1 + param.E1 + param.H2;
 		const H32 = H22 + param.E1 + param.H3;
-		const yy = [param.H1 - param.E2, H22 - param.E2, H32 - param.E2];
+		const yy1 = [param.H1, H22];
+		const yy2 = [param.H1 - param.E2, H22 - param.E2, H32 - param.E2];
 		if (param.mid) {
-			xx.push(L12 - param.E2);
-			xx.push(L12 + param.E1);
+			xx1.push(L12);
+			xx2.push(L12 - param.E2);
+			xx2.push(L12 + param.E1);
+			xx3.push(L12 + param.E1);
 		}
+		const Lback = param.L1 - 2 * param.E1;
+		const Hback = Htot1 - param.H5;
+		const Lplateau1 = param.L1 - 2 * param.E1;
+		const Lplateau2 = (param.L1 - 3 * param.E1) / 2;
+		const Lplateau = param.mid ? Lplateau2 : Lplateau1;
 		// step-5 : checks on the parameter values
-		if (param.E2 > param.H1) {
-			throw `err096: H1 ${param.H1} is too small compare to E2 ${param.E2}`;
+		if (param.H1 < param.H5 + param.E2) {
+			throw `err096: H1 ${param.H1} is too small compare to E2 ${param.E2} and H5 ${param.H5}`;
+		}
+		if (param.H2 < param.E2) {
+			throw `err102: H2 ${param.H2} is too small compare to E2 ${param.E2}`;
+		}
+		if (param.H3 < param.E2) {
+			throw `err105: H3 ${param.H2} is too small compare to E2 ${param.E2}`;
+		}
+		if (Lplateau < 2 * param.E2) {
+			throw `err108: Lplateau ${Lplateau} is too small compare to E2 ${param.E2}`;
 		}
 		// step-6 : any logs
 		rGeome.logstr += `Htotal ${ffix(Htot)} mm\n`;
 		// step-7 : drawing of the figures
 		// figFace
-		figFace.addMainO(ctrRectangle(0, Htot1, param.L1, param.E1));
-		figFace.addSecond(ctrRectangle(0, 0, param.E1, Htot1));
-		figFace.addSecond(ctrRectangle(param.L1 - param.E1, 0, param.E1, Htot1));
-		if (param.mid) {
-			figFace.addSecond(ctrRectangle(L12, 0, param.E1, Htot1));
+		figFace.addSecond(ctrRectangle(0, Htot1, param.L1, param.E1));
+		figFace.addMainO(ctrRectangle(param.E1, param.H5, Lback, Hback));
+		for (const ix of xx1) {
+			figFace.addSecond(ctrRectangle(ix, 0, param.E1, Htot1));
 		}
-		for (const ix of xx) {
-			for (const iy of yy) {
+		for (const ix of xx2) {
+			for (const iy of yy2) {
 				figFace.addSecond(ctrRectangle(ix, iy, param.E2, param.E2));
+			}
+		}
+		for (const ix of xx3) {
+			for (const iy of yy1) {
+				figFace.addSecond(ctrRectangle(ix, iy, Lplateau, param.E1));
 			}
 		}
 		// figSide
