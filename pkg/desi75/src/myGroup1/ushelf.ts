@@ -37,8 +37,8 @@ const pDef: tParamDef = {
 	partName: 'ushelf',
 	params: [
 		//pNumber(name, unit, init, min, max, step)
-		pNumber('L1', 'mm', 1200, 1, 4000, 1),
-		pNumber('H1', 'mm', 100, 1, 4000, 1),
+		pNumber('L1', 'mm', 700, 1, 4000, 1),
+		pNumber('H1', 'mm', 200, 1, 4000, 1),
 		pNumber('H2', 'mm', 340, 1, 4000, 1),
 		pNumber('H3', 'mm', 150, 1, 4000, 1),
 		pNumber('H4', 'mm', 150, 1, 4000, 1),
