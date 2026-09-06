@@ -51,17 +51,17 @@ const pDef: tParamDef = {
 		pNumber('W5', 'mm', 30, 0, 400, 1)
 	],
 	paramSvg: {
-		L1: 'bookshelf_face.svg',
-		H1: 'bookshelf_face2.svg',
+		L1: 'ushelf_face.svg',
+		H1: 'ushelf_face.svg',
 		H2: 'bookshelf_side.svg',
-		H3: 'bookshelf_top2.svg',
-		W1: 'bookshelf_top2.svg',
-		mid: 'bookshelf_top2.svg',
+		H3: 'bookshelf_top.svg',
+		W1: 'bookshelf_top.svg',
+		mid: 'bookshelf_top.svg',
 		E1: 'bookshelf_top.svg',
 		E2: 'bookshelf_top.svg',
 		W2: 'bookshelf_top.svg',
 		H5: 'bookshelf_top.svg',
-		W5: 'bookshelf_face.svg'
+		W5: 'ushelf_face.svg'
 	},
 	sim: {
 		tMax: 180,
