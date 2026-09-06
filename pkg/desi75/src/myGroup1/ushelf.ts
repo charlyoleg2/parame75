@@ -169,14 +169,14 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		const partList: string[] = [];
 		const pi2 = Math.PI / 2;
 		if (param.E1 > 0) {
-			const eName = `subpax_${designName}_top`;
+			const eName = `subpax_${designName}_plateau`;
 			partExtrude.push({
 				outName: eName,
 				face: `${designName}_faceTop`,
 				extrudeMethod: EExtrude.eLinearOrtho,
 				length: param.E1,
 				rotate: [0, 0, 0],
-				translate: [0, 0, Htot1]
+				translate: [0, 0, param.H1]
 			});
 			partList.push(eName);
 		}
@@ -192,15 +192,27 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 			});
 			partList.push(eName);
 		}
-		for (let ii = 0; ii < 2; ii++) {
-			const eName = `subpax_${designName}_side${ii}`;
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_sideL`;
 			partExtrude.push({
 				outName: eName,
 				face: `${designName}_faceSide`,
 				extrudeMethod: EExtrude.eLinearOrtho,
 				length: param.E1,
 				rotate: [pi2, 0, pi2],
-				translate: [ii * (param.L1 - param.E1), 0, 0]
+				translate: [param.L1 - param.E1, 0, 0]
+			});
+			partList.push(eName);
+		}
+		if (param.E1 > 0) {
+			const eName = `subpax_${designName}_sideR`;
+			partExtrude.push({
+				outName: eName,
+				face: `${designName}_faceSideR`,
+				extrudeMethod: EExtrude.eLinearOrtho,
+				length: param.E1,
+				rotate: [pi2, 0, pi2],
+				translate: [0, 0, 0]
 			});
 			partList.push(eName);
 		}
