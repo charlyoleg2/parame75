@@ -122,6 +122,17 @@ function pGeom(t: number, param: tParamVal, suffix = ''): tGeom {
 		}
 		// step-6 : any logs
 		rGeome.logstr += `Htotal ${ffix(Htot)}  Wtotal ${ffix(Wtot)} mm\n`;
+		rGeome.logstr += `BOM ${ffix(param.E1)} mm\n`;
+		rGeome.logstr += `plate-top ${ffix(param.L1)} x ${ffix(Wtot)} mm  x1\n`;
+		rGeome.logstr += `plate-back ${ffix(Lback)} x ${ffix(Hback)} mm  x1\n`;
+		rGeome.logstr += `plateau ${ffix(Lplateau)} x ${ffix(Wplateau)} mm  x${param.mid ? 4 : 2}\n`;
+		rGeome.logstr += `plate-side ${ffix(Htot1)} x ${ffix(Wtot)} mm  x1\n`;
+		rGeome.logstr += `plate-sideMid ${ffix(Htot1)} x ${ffix(Wtot - param.E1)} mm  x${param.mid ? 1 : 0}\n`;
+		rGeome.logstr += `BOM ${ffix(param.E2)} x ${ffix(param.E2)} mm\n`;
+		rGeome.logstr += `beam-Y ${ffix(param.W2)} mm  x${param.mid ? 12 : 6}\n`;
+		rGeome.logstr += `beam-X ${ffix(LHorBeam)} mm  x${param.mid ? 6 : 3}\n`;
+		rGeome.logstr += `beam-Z1 ${ffix(LVerBeam[0])} mm  x${param.mid ? 4 : 2}\n`;
+		rGeome.logstr += `beam-Z2 ${ffix(LVerBeam[1])} mm  x${param.mid ? 4 : 2}\n`;
 		// step-7 : drawing of the figures
 		// figFace
 		figFace.addSecond(ctrRectangle(0, Htot1, param.L1, param.E1));
