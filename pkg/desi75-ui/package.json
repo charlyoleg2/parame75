@@ -33,7 +33,7 @@
 		"clean": "rimraf .svelte-kit build node_modules static/pgdsvg"
 	},
 	"dependencies": {
-		"desi75": "^0.1.4",
+		"desi75": "^0.1.7",
 		"geometrix": "^1.0.38",
 		"geomui": "^1.0.38"
 	},
@@ -56,7 +56,7 @@
 		"svelte": "^5.57.0",
 		"svelte-check": "^4.7.6",
 		"typescript": "^6.0.3",
-		"typescript-eslint": "^8.69.0",
+		"typescript-eslint": "^8.70.0",
 		"vite": "^8.2.2",
 		"vitest": "^5.0.0"
 	}
