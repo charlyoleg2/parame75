@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { repoToHomepage } from '$lib/general.js';
+	import { repoToHomepage } from '#lib/general.js';
 	import { resolve } from '$app/paths';
 	import { version_details } from 'geometrix';
 	import topPackage from '../../../../package.json' with { type: 'json' };
