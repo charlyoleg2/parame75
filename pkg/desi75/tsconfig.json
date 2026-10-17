@@ -1,11 +1,12 @@
 {
 	"compilerOptions": {
-		"ignoreDeprecations": "6.0",
 		"rewriteRelativeImportExtensions": true,
+		"types": ["node"],
 		"declaration": true,
-		"skipLibCheck": true,
 		"sourceMap": true,
+		"skipLibCheck": true,
 		"strict": true,
+		"rootDir": "./src",
 		"outDir": "./dist",
 		"module": "NodeNext",
 		"moduleResolution": "NodeNext"
