@@ -58,7 +58,7 @@
 	},
 	"devDependencies": {
 		"@atao60/fse-cli": "^0.1.9",
-		"npm-run-all2": "^9.0.3",
+		"npm-run-all2": "^9.0.4",
 		"rimraf": "^6.1.3"
 	}
 }
